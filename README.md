@@ -17,8 +17,23 @@ competitions/
 Le dossier porte le slug Kaggle, donc `kaggle competitions download -c <slug>` marche directement.
 Les données et les fichiers de soumission ne sont jamais commités (voir `.gitignore`).
 
-Nouvelle compétition : créer `competitions/<type>/<slug>/`, y mettre le notebook et un README
-(copier celui d'une autre compétition), puis ajouter une ligne au tableau ci-dessous.
+## Workflow sur le VPS
+
+JupyterLab : https://kaggle.juleskantzer.com (voir [`deploy/jupyter/`](deploy/jupyter/)).
+Depuis un terminal (VPS ou terminal Jupyter) :
+
+```bash
+kg new playground-series-s6e3            # dossier + données + notebook starter + ligne dans l'index
+kg submit playground-series-s6e3 submissions/cat_cv0.91234.csv -m "catboost optuna" --cv 0.91234
+kg scores playground-series-s6e3         # dernières soumissions
+```
+
+- `kg new` devine le type (playground, featured…) ; forcer avec `--type getting-started`.
+  Si le téléchargement renvoie 403, accepter d'abord les règles de la compétition sur Kaggle.
+- Le notebook starter ([`template/playground_starter.ipynb`](template/playground_starter.ipynb)) :
+  EDA rapide, CV KFold CatBoost / XGBoost, Optuna sur sous-échantillon, fit sur tout le train,
+  écrit `submissions/<modèle>_cv<score>.csv` et affiche la commande `kg submit` à lancer.
+- `kg submit` attend le score public et ajoute une ligne au tableau Scores du README de la compétition.
 
 ## Compétitions
 

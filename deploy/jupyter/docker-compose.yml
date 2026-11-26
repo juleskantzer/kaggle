@@ -1,0 +1,34 @@
+# JupyterLab pour Kaggle, derrière le Traefik de Dokploy (HTTPS Let's Encrypt).
+# Variables (fichier .env à côté, non commité, ou onglet Environment de Dokploy) :
+#   JUPYTER_PASSWORD_HASH  hash du mot de passe (voir README)
+#   JUPYTER_DOMAIN         ex. kaggle.juleskantzer.com
+#   REPO_DIR               chemin du dépôt sur le VPS (défaut /root/projects/kaggle)
+services:
+  jupyter:
+    build: .
+    image: kaggle-jupyter:latest
+    restart: unless-stopped
+    environment:
+      JUPYTER_PASSWORD_HASH: ${JUPYTER_PASSWORD_HASH:?mot de passe requis}
+      KAGGLE_CONFIG_DIR: /root/.kaggle
+    volumes:
+      - ${REPO_DIR:-/root/projects/kaggle}:/work
+      - /root/.kaggle:/root/.kaggle:ro
+    cpus: 3
+    mem_limit: 10g
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.kaggle-jupyter-web.rule=Host(`${JUPYTER_DOMAIN}`)
+      - traefik.http.routers.kaggle-jupyter-web.entrypoints=web
+      - traefik.http.routers.kaggle-jupyter-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.kaggle-jupyter.rule=Host(`${JUPYTER_DOMAIN}`)
+      - traefik.http.routers.kaggle-jupyter.entrypoints=websecure
+      - traefik.http.routers.kaggle-jupyter.tls.certresolver=letsencrypt
+      - traefik.http.services.kaggle-jupyter.loadbalancer.server.port=8888
+
+networks:
+  dokploy-network:
+    external: true
