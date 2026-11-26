@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Wrapper : utilise le venv Kaggle du VPS s'il existe, sinon le python3 du conteneur.
+DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+PY="$HOME/.venvs/kaggle/bin/python"
+[ -x "$PY" ] || PY=python3
+exec "$PY" "$DIR/kg.py" "$@"
