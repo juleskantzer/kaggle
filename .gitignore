@@ -1,0 +1,26 @@
+# Données et soumissions Kaggle : jamais dans git
+data/
+input/
+*.csv
+*.parquet
+*.zip
+*.feather
+submissions/
+
+# Jetons Kaggle
+kaggle.json
+access_token
+.kaggle/
+
+# Modèles et sorties
+*.pkl
+*.joblib
+*.cbm
+catboost_info/
+models/
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.env
